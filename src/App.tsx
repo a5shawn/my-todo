@@ -4,7 +4,14 @@ import { TodoInput } from './components/TodoInput';
 import { TodoFilters } from './components/TodoFilters';
 import { TodoList } from './components/TodoList';
 import { TodoStats } from './components/TodoStats';
+import { ThemeToggle } from './components/ThemeToggle';
 import './App.css';
+
+function getInitialTheme(): 'light' | 'dark' {
+  const stored = localStorage.getItem('theme');
+  if (stored === 'light' || stored === 'dark') return stored;
+  return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+}
 
 function App() {
   const [todos, setTodos] = useState<Todo[]>(() => {
@@ -12,10 +19,16 @@ function App() {
     return stored ? JSON.parse(stored) : [];
   });
   const [filter, setFilter] = useState<Filter>('all');
+  const [theme, setTheme] = useState<'light' | 'dark'>(getInitialTheme);
 
   useEffect(() => {
     localStorage.setItem('todos', JSON.stringify(todos));
   }, [todos]);
+
+  useEffect(() => {
+    document.documentElement.dataset.theme = theme;
+    localStorage.setItem('theme', theme);
+  }, [theme]);
 
   const filteredTodos = useMemo(
     () => todos.filter((t) => {
@@ -49,14 +62,19 @@ function App() {
     setTodos((prev) => prev.filter((t) => !t.completed));
   };
 
+  const toggleTheme = () => {
+    setTheme((prev) => (prev === 'light' ? 'dark' : 'light'));
+  };
+
   return (
+    <><ThemeToggle theme={theme} onToggle={toggleTheme} />
     <div className="container">
       <h1>待办清单</h1>
       <TodoInput onAdd={addTodo} />
       <TodoFilters currentFilter={filter} onFilterChange={setFilter} />
       <TodoList todos={filteredTodos} onToggle={toggleTodo} onDelete={deleteTodo} />
       <TodoStats activeCount={activeCount} onClearCompleted={clearCompleted} />
-    </div>
+    </div></>
   );
 }
 
