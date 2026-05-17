@@ -1,5 +1,6 @@
 import type { Todo } from '../types';
 import { TodoItem } from './TodoItem';
+import { useLanguage } from '../i18n';
 
 interface TodoListProps {
   todos: Todo[];
@@ -8,8 +9,10 @@ interface TodoListProps {
 }
 
 export function TodoList({ todos, onToggle, onDelete }: TodoListProps) {
+  const { t } = useLanguage();
+
   if (todos.length === 0) {
-    return <p className="empty-msg">暂无待办事项</p>;
+    return <p className="empty-msg">{t('list.empty')}</p>;
   }
 
   return (

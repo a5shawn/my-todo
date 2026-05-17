@@ -1,26 +1,38 @@
 import type { Filter } from '../types';
+import { useLanguage } from '../i18n';
 
 interface TodoFiltersProps {
   currentFilter: Filter;
   onFilterChange: (filter: Filter) => void;
 }
 
-const FILTERS: { key: Filter; label: string }[] = [
-  { key: 'all', label: '全部' },
-  { key: 'active', label: '进行中' },
-  { key: 'completed', label: '已完成' },
-];
+function filterLabel(key: Filter): string {
+  const map: Record<Filter, string> = {
+    all: 'filter.all',
+    active: 'filter.active',
+    completed: 'filter.completed',
+  };
+  return map[key];
+}
 
 export function TodoFilters({ currentFilter, onFilterChange }: TodoFiltersProps) {
+  const { t } = useLanguage();
+
+  const FILTERS: { key: Filter }[] = [
+    { key: 'all' },
+    { key: 'active' },
+    { key: 'completed' },
+  ];
+
   return (
     <div className="filters">
-      {FILTERS.map(({ key, label }) => (
+      {FILTERS.map(({ key }) => (
         <button
           key={key}
           className={currentFilter === key ? 'active' : ''}
           onClick={() => onFilterChange(key)}
         >
-          {label}
+          {t(filterLabel(key))}
         </button>
       ))}
     </div>

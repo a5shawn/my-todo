@@ -1,10 +1,12 @@
 import { useState, useEffect, useMemo } from 'react';
 import type { Todo, Filter } from './types';
+import { useLanguage } from './i18n';
 import { TodoInput } from './components/TodoInput';
 import { TodoFilters } from './components/TodoFilters';
 import { TodoList } from './components/TodoList';
 import { TodoStats } from './components/TodoStats';
 import { ThemeToggle } from './components/ThemeToggle';
+import { LangToggle } from './components/LangToggle';
 import './App.css';
 
 function getInitialTheme(): 'light' | 'dark' {
@@ -14,6 +16,7 @@ function getInitialTheme(): 'light' | 'dark' {
 }
 
 function App() {
+  const { t } = useLanguage();
   const [todos, setTodos] = useState<Todo[]>(() => {
     const stored = localStorage.getItem('todos');
     return stored ? JSON.parse(stored) : [];
@@ -67,14 +70,19 @@ function App() {
   };
 
   return (
-    <><ThemeToggle theme={theme} onToggle={toggleTheme} />
-    <div className="container">
-      <h1>待办清单</h1>
-      <TodoInput onAdd={addTodo} />
-      <TodoFilters currentFilter={filter} onFilterChange={setFilter} />
-      <TodoList todos={filteredTodos} onToggle={toggleTodo} onDelete={deleteTodo} />
-      <TodoStats activeCount={activeCount} onClearCompleted={clearCompleted} />
-    </div></>
+    <>
+      <div className="top-actions">
+        <LangToggle />
+        <ThemeToggle theme={theme} onToggle={toggleTheme} />
+      </div>
+      <div className="container">
+        <h1>{t('app.title')}</h1>
+        <TodoInput onAdd={addTodo} />
+        <TodoFilters currentFilter={filter} onFilterChange={setFilter} />
+        <TodoList todos={filteredTodos} onToggle={toggleTodo} onDelete={deleteTodo} />
+        <TodoStats activeCount={activeCount} onClearCompleted={clearCompleted} />
+      </div>
+    </>
   );
 }
 
